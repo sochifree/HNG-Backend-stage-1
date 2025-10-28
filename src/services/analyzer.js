@@ -1,21 +1,21 @@
 const crypto = require('crypto');
 
-function sha256(value) {
-    return crypto.createHash('sha256').update(value, 'utf8').digest('hex');
+function sha256(str) {
+    return crypto.createHash('sha256').update(str).digest('hex');
 }
 
-function lengthOf(value) {
-    return value.length;
+function lengthOf(str) {
+    return [...String(str)].length;
 }
 
-function wordCount(value) {
-    if (!value || value.trim() === "") return 0;
-    return value.trim().split(/\s+/).length
+function wordCount(str) {
+    if (!String(str).trim()) return 0;
+    return String(str).trim().split(/\s+/).length
 }
 
-function characterFrequencyMap(value) {
+function characterFrequencyMap(str) {
     const map ={}
-    for (const ch of value ) {
+    for (const ch of String(str)) {
         map[ch] = (map[ch] || 0) + 1
     }
     return map
@@ -25,22 +25,20 @@ function uniqueCharacters(value) {
     return Object.keys(characterFrequencyMap(value)).length
 }
 
-function isPalindrome(value) {
-    const normalized = value.toLowerCase().replace(/[^a-z0-9]/g, '');
-    const reversed = normalized.split('').reverse().join('');
-    return normalized === reversed && normalized.length > 0
+function isPalindromeCaseInsensitive(str) {
+    const s = String(str).toLowerCase()
+    return s ===[...s].reversed().join
 }
 
 function analyzeString(value) {
-    const sha = sha256(value);
-    const freq = characterFrequencyMap(value)
+    const v = String(value);
     return {
-        length: lengthOf (value),
-        is_palindrome: isPalindrome(value),
-        unique_characters: Object.keys(freq).length,
-        word_count: wordCount(value),
-        sha256_hash: sha,
-        character_frequency_map: freq,
+        length: lengthOf (v),
+        is_palindrome: isPalindromeCaseInsensitive(v),
+        unique_characters: uniqueCharacters(v),
+        word_count: wordCount(v),
+        sha256_hash: sha256Hash(v),
+        character_frequency_map: characterFrequencyMap(v),
     }
 }
 
@@ -51,5 +49,5 @@ module.exports = {
     analyzeString,
     characterFrequencyMap,
     uniqueCharacters,
-    isPalindrome
+    isPalindromeCaseInsensitive
 }
