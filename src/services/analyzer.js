@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 
-function sha256(str) {
+function sha256Hash(str) {
     return crypto.createHash('sha256').update(str).digest('hex');
 }
 
@@ -15,7 +15,7 @@ function wordCount(str) {
 
 function characterFrequencyMap(str) {
     const map ={}
-    for (const ch of String(str)) {
+    for (const ch of String(str).toLowerCase()) {
         map[ch] = (map[ch] || 0) + 1
     }
     return map
@@ -27,7 +27,7 @@ function uniqueCharacters(value) {
 
 function isPalindromeCaseInsensitive(str) {
     const s = String(str).toLowerCase()
-    return s ===[...s].reversed().join
+    return s ===[...s].reversed().join('')
 }
 
 function analyzeString(value) {
@@ -41,9 +41,9 @@ function analyzeString(value) {
         character_frequency_map: characterFrequencyMap(v),
     }
 }
-
+ 
 module.exports = {
-    sha256,
+    sha256Hash,
     lengthOf,
     wordCount,
     analyzeString,
