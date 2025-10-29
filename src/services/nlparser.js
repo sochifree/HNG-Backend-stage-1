@@ -1,40 +1,60 @@
-// Very small rule-based natural language parser for simple filter phrases.
+function parseNaturalLanguage(raw) {
+  if (!raw || typeof raw !== 'string') {
+    const err = new Error('query must be a string');
+    err.status = 400;
+    throw err;
+  }
+  const q = raw.toLowerCase();
 
-function parseNaturalLanguage(query) {
-const original = query;
-const out = {};
-const lower = query.toLowerCase();
+  const filters = {};
 
+  // single word / one word
+  if (/\b(single|one)\s+word\b/.test(q) || /\bonly one word\b/.test(q)) {
+    filters.word_count = 1;
+  }
 
-if (/palindromic|palindrome/.test(lower)) out.is_palindrome = true;
-if (/single word|one word/.test(lower)) out.word_count = 1;
+  // palindromic / palindrome
+  if (/\bpalindrom/.test(q)) {
+    filters.is_palindrome = true;
+  }
 
+  // longer than N characters -> min_length = N+1
+  const longerChars = q.match(/longer than (\d+)\s*characters?/);
+  if (longerChars) {
+    const n = parseInt(longerChars[1], 10);
+    if (!Number.isNaN(n)) filters.min_length = n + 1;
+  } else {
+    // fallback: "longer than N"
+    const longer = q.match(/longer than (\d+)/);
+    if (longer) {
+      const n = parseInt(longer[1], 10);
+      if (!Number.isNaN(n)) filters.min_length = n + 1;
+    }
+  }
 
-const longerMatch = lower.match(/longer than (\d+)/);
-if (longerMatch) out.min_length = parseInt(longerMatch[1], 10) + 1;
+  // containing the letter x
+  const contains = q.match(/contain(?:s|ing)?(?: the)? letter ([a-z])/);
+  if (contains) filters.contains_character = contains[1];
 
+  // "palindromic strings that contain the first vowel" - basic heuristic: 'a'
+  if (/\bfirst vowel\b/.test(q) && filters.is_palindrome) {
+    filters.contains_character = filters.contains_character || 'a';
+  }
 
-const betweenMatch = lower.match(/between (\d+) and (\d+)/);
-if (betweenMatch) {
-out.min_length = parseInt(betweenMatch[1], 10);
-out.max_length = parseInt(betweenMatch[2], 10);
+  if (Object.keys(filters).length === 0) {
+    const err = new Error('Unable to parse natural language query');
+    err.status = 400;
+    throw err;
+  }
+
+  // sanity check
+  if (filters.min_length !== undefined && filters.max_length !== undefined && filters.min_length > filters.max_length) {
+    const err = new Error('Conflicting filters');
+    err.status = 422;
+    throw err;
+  }
+
+  return { original: raw, parsed_filters: filters };
 }
-
-
-const containsLetter = lower.match(/letter ([a-z0-9])/);
-if (containsLetter) out.contains_character = containsLetter[1];
-
-
-if (/first vowel/.test(lower)) out.contains_character = 'a'; // heuristic
-
-
-if (Object.keys(out).length === 0) {
-throw new Error('Unable to parse natural language query');
-}
-
-
-return { original, parsed_filters: out };
-}
-
 
 module.exports = { parseNaturalLanguage };
