@@ -1,6 +1,5 @@
 # String Analyzer API  
-
-This project is part of the **Backend Internship (Stage 1)** task.  
+ 
 It’s a RESTful API service that analyzes strings, computes their properties, and stores them in a database.  
 
 
@@ -36,7 +35,7 @@ The goal is to build an API that can:
 
 ## Live API  
 Base URL:  
- [https://hng-backend-stage-1-production-f772.up.railway.app](https://hng-backend-stage-1-production-f772.up.railway.app)
+ [https://hng-backend-stage-1-production-531d.up.railway.app](hng-backend-stage-1-production-531d.up.railway.app)
 
 
 ## Example Request  
