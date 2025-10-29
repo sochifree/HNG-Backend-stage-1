@@ -1,5 +1,5 @@
 const StringModel = require('../models/stringModel');
-const { analyzeString, sha256 } = require('../services/analyzer');
+const { analyzeString, sha256Hash } = require('../services/analyzer');
 const { parseNaturalLanguage } = require('../services/nlparser');
 
 function validateCreateBody(body) {
@@ -225,3 +225,4 @@ module.exports = {
   filterByNaturalLanguage,
   deleteString
 };
+
